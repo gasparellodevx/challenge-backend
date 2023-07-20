@@ -1,0 +1,9 @@
+apiVersion: 1
+
+
+datasources:
+- name: Prometheus
+  type: prometheus
+  access: proxy
+  url: http://prometheus:9090
+  uid: e16aa381-dbf0-4af3-aa8d-59dd8009e12c
