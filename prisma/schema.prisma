@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id         String    @id @default(uuid())
+  name       String
+  email      String    @unique
+  lastAccess DateTime? @map("last_access")
+  otp        String?   @db.VarChar(6)
+  otpExpires DateTime? @map("otp_expires")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  courses Course[]
+
+  @@index([otp, otpExpires])
+  @@map("students")
+}
+
+model Course {
+  id          String     @id @default(uuid())
+  name        String
+  thumbnail   String?
+  description String     @db.Text
+  category    String     @db.VarChar(64)
+  type        CourseType
+  accessUrl   String     @map("access_url")
+  supportUrl  String     @map("support_url")
+
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("courses")
+}
+
+enum CourseType {
+  EXTERNAL_LINK
+  LERANING_AREA
+}
