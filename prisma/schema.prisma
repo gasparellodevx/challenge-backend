@@ -36,8 +36,8 @@ model Course {
   accessUrl   String     @map("access_url")
   supportUrl  String     @map("support_url")
 
+  studentId String  @map("student_id")
   student   Student @relation(fields: [studentId], references: [id])
-  studentId String
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
@@ -47,5 +47,5 @@ model Course {
 
 enum CourseType {
   EXTERNAL_LINK
-  LERANING_AREA
+  LEARNING_AREA
 }
