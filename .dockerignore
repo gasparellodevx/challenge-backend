@@ -1,0 +1,10 @@
+.env
+.env.example
+.eslintrc.json
+.gitignore
+.prettierrc
+Dockerfile
+docker-compose.yml
+README.md
+test
+node_modules
