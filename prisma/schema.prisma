@@ -22,6 +22,8 @@ model Student {
 
   courses Course[]
 
+  logs Log[] @ignore
+
   @@index([otp, otpExpires])
   @@map("students")
 }
@@ -48,4 +50,17 @@ model Course {
 enum CourseType {
   EXTERNAL_LINK
   LEARNING_AREA
+}
+
+model Log {
+  id         String   @id @default(uuid())
+  executedAt DateTime @default(now()) @map("executed_at")
+  action     String
+  extra      String?  @db.Text
+  error      String?  @db.Text
+
+  userId String?  @map("user_id")
+  user   Student? @relation(fields: [userId], references: [id])
+
+  @@map("logs")
 }
