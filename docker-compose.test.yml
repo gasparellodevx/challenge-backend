@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    command: --enable-feature=remote-write-receiver --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 4000:3000
+    volumes:
+      - .docker/config/grafana/provisioning:/etc/grafana/provisioning
+      - .docker/config/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+  test:
+    build:
+      target: test
+    image: k6-test
+    volumes:
+      - ./scripts:/app/scripts
+    ports:
+      - 6565:6565
+    env_file:
+      - .env
+    depends_on:
+      - grafana
+      - web

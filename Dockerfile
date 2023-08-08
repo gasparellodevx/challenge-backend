@@ -26,7 +26,9 @@ FROM node:18-alpine as production
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm ci && pnpx prisma generate
+COPY prisma ./prisma
+
+RUN npm install -g pnpm && pnpm install && pnpx prisma generate
 
 COPY --from=base /app/dist ./dist
 
