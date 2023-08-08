@@ -3,9 +3,10 @@ import {
   Controller,
   HttpCode,
   Post,
+  Req,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService, TokenPayload } from './auth.service';
 import { LoginDTO } from './dtos/login.dto';
 import { OTPLoginDTO } from './dtos/otp-login.dto';
 import {
@@ -15,6 +16,9 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ApiInternalServerErrorResponse } from '@/shared/decorators/api-internal-server-error-response.decorator';
+import { LogAction } from '@/shared/infra/log/decorators/log-action.decorator';
+import { LogActions } from '@/shared/infra/log/log-actions.enum';
+import { Request } from 'express';
 
 @ApiBadRequestResponse({
   description: 'Invalid request body',
@@ -25,6 +29,7 @@ import { ApiInternalServerErrorResponse } from '@/shared/decorators/api-internal
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @LogAction(LogActions.LOGIN)
   @ApiOperation({
     summary: 'Starts the login process',
     description: 'Sends an OTP to the user',
@@ -35,6 +40,7 @@ export class AuthController {
     await this.authService.sendOTP(loginDto);
   }
 
+  @LogAction(LogActions.OTP_LOGIN)
   @ApiOperation({
     summary: 'Completes the login process',
     description: 'Returns the access token',
@@ -44,10 +50,17 @@ export class AuthController {
   })
   @Post('login/otp')
   @HttpCode(200)
-  public async otpLogin(@Body() otpLoginDto: OTPLoginDTO) {
-    const tokens = await this.authService.loginOTP(otpLoginDto);
+  public async otpLogin(
+    @Body() otpLoginDto: OTPLoginDTO,
+    @Req() req: Request & { user: TokenPayload },
+  ) {
+    const result = await this.authService.loginOTP(otpLoginDto);
 
-    if (!tokens) throw new UnauthorizedException();
+    if (!result) throw new UnauthorizedException();
+
+    const { payload, ...tokens } = result;
+
+    req.user = payload;
 
     return tokens;
   }

@@ -48,6 +48,7 @@ export class AuthService {
     if (!payload) return null;
 
     return {
+      payload,
       access_token: this.createToken(payload),
     };
   }
