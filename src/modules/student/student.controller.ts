@@ -16,6 +16,9 @@ import { TokenPayload } from '../auth/auth.service';
 import { User } from '../auth/decorators/user.decorator';
 import { ApiAccessToken } from '../auth/decorators/api-access-token.decorator';
 import { ApiInternalServerErrorResponse } from '@/shared/decorators/api-internal-server-error-response.decorator';
+import { LogAction } from '@/shared/infra/log/decorators/log-action.decorator';
+import { LogActions } from '@/shared/infra/log/log-actions.enum';
+import { InvalidateUserCache } from '@/shared/infra/cache/decorators/invalidate-user-cache.decorator';
 
 @ApiInternalServerErrorResponse()
 @ApiBadRequestResponse({
@@ -26,6 +29,7 @@ import { ApiInternalServerErrorResponse } from '@/shared/decorators/api-internal
 export class StudentController {
   constructor(private studentService: StudentService) {}
 
+  @LogAction(LogActions.STUDENT_CREATE)
   @ApiOperation({
     summary: 'Create a student',
     description: 'Create a student with the given data',
@@ -41,6 +45,8 @@ export class StudentController {
     return toStudentDTO(result.value);
   }
 
+  @InvalidateUserCache()
+  @LogAction(LogActions.STUDENT_UPDATE)
   @UseGuards(JWTGuard)
   @ApiAccessToken()
   @ApiOperation({

@@ -15,6 +15,7 @@ const envSchema = z.object({
   EMAIL_PASS: z.string().optional(),
   EMAIL_FROM: z.string(),
   BULL_REDIS_URL: z.string().url(),
+  CACHE_TTL: z.coerce.number().default(60),
 });
 
 export type Env = z.infer<typeof envSchema>;

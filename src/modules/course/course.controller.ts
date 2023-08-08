@@ -28,6 +28,10 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ApiInternalServerErrorResponse } from '@/shared/decorators/api-internal-server-error-response.decorator';
+import { LogAction } from '@/shared/infra/log/decorators/log-action.decorator';
+import { LogActions } from '@/shared/infra/log/log-actions.enum';
+import { CacheTTL } from '@nestjs/cache-manager';
+import { InvalidateUserCache } from '@/shared/infra/cache/decorators/invalidate-user-cache.decorator';
 
 @ApiTags('COURSES')
 @ApiAccessToken()
@@ -43,6 +47,8 @@ import { ApiInternalServerErrorResponse } from '@/shared/decorators/api-internal
 export class CourseController {
   constructor(private courseService: CourseService) {}
 
+  @CacheTTL(15)
+  @LogAction(LogActions.COURSE_LIST)
   @ApiOperation({
     summary: 'List courses',
     description: 'List student courses',
@@ -59,6 +65,8 @@ export class CourseController {
     });
   }
 
+  @InvalidateUserCache()
+  @LogAction(LogActions.COURSE_CREATE)
   @ApiOperation({
     summary: 'Create a course',
     description: 'Create a course with the given data',
@@ -74,6 +82,8 @@ export class CourseController {
     });
   }
 
+  @InvalidateUserCache()
+  @LogAction(LogActions.COURSE_UPDATE)
   @ApiOperation({
     summary: 'Update a course',
     description: 'Update a course with the given id and data',
@@ -95,6 +105,8 @@ export class CourseController {
     return result.value;
   }
 
+  @InvalidateUserCache()
+  @LogAction(LogActions.COURSE_DELETE)
   @ApiOperation({
     summary: 'Delete a course',
     description: 'Delete a course with the given id',

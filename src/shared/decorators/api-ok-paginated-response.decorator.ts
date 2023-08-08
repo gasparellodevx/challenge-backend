@@ -4,7 +4,7 @@ import { PaginatedDTO } from '../dtos/paginated.dto';
 
 export function ApiOkPaginatedResponse<T = any>(dto: Type<T>) {
   return applyDecorators(
-    ApiExtraModels(PaginatedDTO),
+    ApiExtraModels(PaginatedDTO, dto),
     ApiOkResponse({
       schema: {
         allOf: [

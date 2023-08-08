@@ -19,7 +19,9 @@ export const PROVIDERS: ModuleMetadata['providers'] = [
     provide: TRANSPORTER_KEY,
     inject: [ConfigService],
     useFactory: async (configService: ConfigService<Env>) => {
-      const isDev = configService.get('NODE_ENV') === 'development';
+      const isDev = ['development', 'test'].includes(
+        configService.get('NODE_ENV'),
+      );
 
       return createTransport({
         from: configService.get('EMAIL_FROM'),
